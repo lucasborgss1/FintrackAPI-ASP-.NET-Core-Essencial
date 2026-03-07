@@ -6,7 +6,8 @@ public class Transacao
     public string? Titulo { get; set; };
     public decimal Valor { get; set; }
     public DateTime Data { get; set; }
-    public TipoTransacao? Tipo { get; set; }
     public int CategoriaId { get; set; }
     public Categoria? Categoria { get; set; }
+    public int TipoTransacaoId { get; set; }
+    public TipoTransacao? TipoTransacao { get; set; }
 }
