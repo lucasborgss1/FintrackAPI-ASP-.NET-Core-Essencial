@@ -4,6 +4,7 @@ using FintrackAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FintrackAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260308215115_PopulaBancoInicial")]
+    partial class PopulaBancoInicial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +47,7 @@ namespace FintrackAPI.Migrations
 
                     b.HasKey("CategoriaId");
 
-                    b.ToTable("CAT_categoria", (string)null);
+                    b.ToTable("CAT_categoria");
 
                     b.HasData(
                         new
@@ -89,7 +92,7 @@ namespace FintrackAPI.Migrations
 
                     b.HasKey("TipoTransacaoId");
 
-                    b.ToTable("TPT_tipo_transacao", (string)null);
+                    b.ToTable("TPT_tipo_transacao");
 
                     b.HasData(
                         new
@@ -157,7 +160,7 @@ namespace FintrackAPI.Migrations
 
                     b.HasIndex("TipoTransacaoId");
 
-                    b.ToTable("TRA_transacao", (string)null);
+                    b.ToTable("TRA_transacao");
 
                     b.HasData(
                         new
