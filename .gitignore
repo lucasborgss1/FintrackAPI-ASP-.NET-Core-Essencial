@@ -417,3 +417,4 @@ FodyWeavers.xsd
 *.msm
 *.msp
 /FintrackAPI/appsettings.json
+/FintrackAPI/appsettings.Development.json
