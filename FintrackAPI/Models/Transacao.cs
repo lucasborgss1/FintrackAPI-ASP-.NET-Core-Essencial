@@ -21,7 +21,7 @@ public class Transacao
 
     [Required]
     [Column("tra_dt_data")]  
-    public DateTime Data { get; set; }
+    public DateOnly Data { get; set; }
 
     [Required]
     [Column("tra_id_categoria")]
