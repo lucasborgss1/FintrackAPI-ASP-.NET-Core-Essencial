@@ -21,6 +21,7 @@ namespace FintrackAPI.Controllers
         public async Task<ActionResult<IEnumerable<Transacao>>> GetTransacoes()
         {
             return await _context.Transacoes
+                .AsNoTracking()
                 .Include(t => t.Categoria)
                 .Include(t => t.TipoTransacao)
                 .ToListAsync();
@@ -31,6 +32,7 @@ namespace FintrackAPI.Controllers
         public async Task<ActionResult<Transacao>> GetTransacao(int id)
         {
             var transacao = await _context.Transacoes
+                .AsNoTracking()
                 .Include(t => t.Categoria)
                 .Include(t => t.TipoTransacao)
                 .FirstOrDefaultAsync(t => t.TransacaoId == id);
