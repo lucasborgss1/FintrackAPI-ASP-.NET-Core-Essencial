@@ -17,12 +17,12 @@ public class Categoria
     [Column("cat_id_categoria")]
     public long CategoriaId { get; set; }
 
-    [Required]
-    [StringLength(50)]
+    [Required(ErrorMessage = "O nome da categoria é obrigatório")]
+    [StringLength(50, ErrorMessage = "O nome não pode exceder 50 caracteres")]
     [Column("cat_nm_nome")]
     public string? Nome { get; set; }
 
-    [StringLength(150)]
+    [StringLength(150, ErrorMessage = "A descrição não pode exceder 150 caracteres")]
     [Column("cat_ds_descricao")]
     public string? Descricao { get; set; }
 
