@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FintrackAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260308220417_AjusteTabelaTransacao")]
-    partial class AjusteTabelaTransacao
+    [Migration("20260311200019_CreateDataBaseWithBigint")]
+    partial class CreateDataBaseWithBigint
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,12 +27,12 @@ namespace FintrackAPI.Migrations
 
             modelBuilder.Entity("FintrackAPI.Models.Categoria", b =>
                 {
-                    b.Property<int>("CategoriaId")
+                    b.Property<long>("CategoriaId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasColumnName("cat_id_categoria");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CategoriaId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("CategoriaId"));
 
                     b.Property<string>("Descricao")
                         .HasMaxLength(150)
@@ -52,19 +52,19 @@ namespace FintrackAPI.Migrations
                     b.HasData(
                         new
                         {
-                            CategoriaId = 1000000001,
+                            CategoriaId = 1000000001L,
                             Descricao = "Supermercado, padaria, restaurantes",
                             Nome = "Alimentação"
                         },
                         new
                         {
-                            CategoriaId = 1000000002,
+                            CategoriaId = 1000000002L,
                             Descricao = "Ônibus, metrô, combustível, apps de transporte",
                             Nome = "Transporte"
                         },
                         new
                         {
-                            CategoriaId = 1000000003,
+                            CategoriaId = 1000000003L,
                             Descricao = "Recebimento mensal da empresa",
                             Nome = "Salário"
                         });
@@ -72,12 +72,12 @@ namespace FintrackAPI.Migrations
 
             modelBuilder.Entity("FintrackAPI.Models.TipoTransacao", b =>
                 {
-                    b.Property<int>("TipoTransacaoId")
+                    b.Property<long>("TipoTransacaoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasColumnName("tpt_id_tipo_transacao");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("TipoTransacaoId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("TipoTransacaoId"));
 
                     b.Property<string>("Descricao")
                         .HasMaxLength(150)
@@ -97,19 +97,19 @@ namespace FintrackAPI.Migrations
                     b.HasData(
                         new
                         {
-                            TipoTransacaoId = 1000000001,
+                            TipoTransacaoId = 1000000001L,
                             Descricao = "Saídas de dinheiro e pagamentos",
                             Nome = "Despesa"
                         },
                         new
                         {
-                            TipoTransacaoId = 1000000002,
+                            TipoTransacaoId = 1000000002L,
                             Descricao = "Entradas de dinheiro e ganhos",
                             Nome = "Receita"
                         },
                         new
                         {
-                            TipoTransacaoId = 1000000003,
+                            TipoTransacaoId = 1000000003L,
                             Descricao = "Movimentação entre contas",
                             Nome = "Transferência"
                         });
@@ -117,15 +117,15 @@ namespace FintrackAPI.Migrations
 
             modelBuilder.Entity("FintrackAPI.Models.Transacao", b =>
                 {
-                    b.Property<int>("TransacaoId")
+                    b.Property<long>("TransacaoId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("bigint")
                         .HasColumnName("tra_id_transacao");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("TransacaoId"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("TransacaoId"));
 
-                    b.Property<int>("CategoriaId")
-                        .HasColumnType("int")
+                    b.Property<long>("CategoriaId")
+                        .HasColumnType("bigint")
                         .HasColumnName("tra_id_categoria");
 
                     b.Property<DateOnly>("Data")
@@ -140,8 +140,8 @@ namespace FintrackAPI.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasColumnName("tra_fl_recorrente");
 
-                    b.Property<int>("TipoTransacaoId")
-                        .HasColumnType("int")
+                    b.Property<long>("TipoTransacaoId")
+                        .HasColumnType("bigint")
                         .HasColumnName("tra_id_tipo_transacao");
 
                     b.Property<string>("Titulo")
@@ -165,23 +165,23 @@ namespace FintrackAPI.Migrations
                     b.HasData(
                         new
                         {
-                            TransacaoId = 1000000001,
-                            CategoriaId = 1000000001,
+                            TransacaoId = 1000000001L,
+                            CategoriaId = 1000000001L,
                             Data = new DateOnly(2026, 3, 5),
                             IsCredito = true,
                             IsRecorrente = false,
-                            TipoTransacaoId = 1000000001,
+                            TipoTransacaoId = 1000000001L,
                             Titulo = "Compra no Supermercado",
                             Valor = 350.75m
                         },
                         new
                         {
-                            TransacaoId = 1000000002,
-                            CategoriaId = 1000000003,
+                            TransacaoId = 1000000002L,
+                            CategoriaId = 1000000003L,
                             Data = new DateOnly(2026, 3, 1),
                             IsCredito = false,
                             IsRecorrente = true,
-                            TipoTransacaoId = 1000000002,
+                            TipoTransacaoId = 1000000002L,
                             Titulo = "Pagamento Mensal",
                             Valor = 5000.00m
                         });

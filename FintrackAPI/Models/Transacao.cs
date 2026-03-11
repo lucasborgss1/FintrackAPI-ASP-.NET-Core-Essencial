@@ -8,7 +8,7 @@ public class Transacao
 {
     [Key]
     [Column("tra_id_transacao")]
-    public int TransacaoId { get; set; }
+    public long TransacaoId { get; set; }
 
     [Required]
     [StringLength(100)]
@@ -25,14 +25,14 @@ public class Transacao
 
     [Required]
     [Column("tra_id_categoria")]
-    public int CategoriaId { get; set; }
+    public long CategoriaId { get; set; }
 
     [ForeignKey("CategoriaId")]
     public Categoria? Categoria { get; set; }
 
     [Required]
     [Column("tra_id_tipo_transacao")]
-    public int TipoTransacaoId { get; set; }
+    public long TipoTransacaoId { get; set; }
 
     [ForeignKey("TipoTransacaoId")]
     public TipoTransacao? TipoTransacao { get; set; }

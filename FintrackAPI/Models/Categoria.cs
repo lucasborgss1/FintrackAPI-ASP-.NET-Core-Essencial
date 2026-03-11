@@ -15,7 +15,7 @@ public class Categoria
 
     [Key]
     [Column("cat_id_categoria")]
-    public int CategoriaId { get; set; }
+    public long CategoriaId { get; set; }
 
     [Required]
     [StringLength(50)]

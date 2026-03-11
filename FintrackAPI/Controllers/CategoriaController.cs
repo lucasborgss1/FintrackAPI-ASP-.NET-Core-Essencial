@@ -27,8 +27,8 @@ namespace FintrackAPI.Controllers
         }
 
         // GET: v1/api/Categorias/{valor}
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<Categoria>> GetCategoria(int id)
+        [HttpGet("{id:long:min(1000000001):length(10)}")]
+        public async Task<ActionResult<Categoria>> GetCategoria(long id)
         {
             var categoria = await _context.Categorias
                 .AsNoTracking()
@@ -44,8 +44,8 @@ namespace FintrackAPI.Controllers
         }
 
         // PUT: v1/api/Categorias/{valor}
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> PutCategoria(int id, Categoria categoria)
+        [HttpPut("{id:long:min(1000000001):length(10)}")]
+        public async Task<IActionResult> PutCategoria(long id, Categoria categoria)
         {
             if (id != categoria.CategoriaId)
             {
@@ -84,8 +84,8 @@ namespace FintrackAPI.Controllers
         }
 
         // DELETE: v1/api/Categorias/{valor}
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteCategoria(int id)
+        [HttpDelete("{id:long:min(1000000001):length(10)}")]
+        public async Task<IActionResult> DeleteCategoria(long id)
         {
             var categoria = await _context.Categorias.FindAsync(id);
             if (categoria == null)
@@ -99,7 +99,7 @@ namespace FintrackAPI.Controllers
             return NoContent();
         }
 
-        private bool CategoriaExists(int id)
+        private bool CategoriaExists(long id)
         {
             return _context.Categorias.Any(e => e.CategoriaId == id);
         }

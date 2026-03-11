@@ -15,7 +15,7 @@ public class TipoTransacao
 
     [Key]
     [Column("tpt_id_tipo_transacao")]
-    public int TipoTransacaoId { get; set; }
+    public long TipoTransacaoId { get; set; }
 
     [Required]
     [StringLength(50)]

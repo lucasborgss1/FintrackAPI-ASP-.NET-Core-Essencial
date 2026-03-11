@@ -28,8 +28,8 @@ namespace FintrackAPI.Controllers
         }
 
         // GET: v1/api/Transacao/{valor}
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<Transacao>> GetTransacao(int id)
+        [HttpGet("{id:long:min(1000000001):length(10)}")]
+        public async Task<ActionResult<Transacao>> GetTransacao(long id)
         {
             var transacao = await _context.Transacoes
                 .AsNoTracking()
@@ -46,8 +46,8 @@ namespace FintrackAPI.Controllers
         }
 
         // PUT: v1/api/Transacao/{valor}
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> PutTransacao(int id, Transacao transacao)
+        [HttpPut("{id:long:min(1000000001):length(10)}")]
+        public async Task<IActionResult> PutTransacao(long id, Transacao transacao)
         {
             if (id != transacao.TransacaoId)
             {
@@ -86,8 +86,8 @@ namespace FintrackAPI.Controllers
         }
 
         // DELETE: v1/api/Transacao/{valor}
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteTransacao(int id)
+        [HttpDelete("{id:long:min(1000000001):length(10)}")]
+        public async Task<IActionResult> DeleteTransacao(long id)
         {
             var transacao = await _context.Transacoes.FindAsync(id);
             if (transacao == null)
@@ -101,7 +101,7 @@ namespace FintrackAPI.Controllers
             return NoContent();
         }
 
-        private bool TransacaoExists(int id)
+        private bool TransacaoExists(long id)
         {
             return _context.Transacoes.Any(e => e.TransacaoId == id);
         }
