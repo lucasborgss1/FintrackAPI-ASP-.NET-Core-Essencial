@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FintrackAPI.Validations;
 
 namespace FintrackAPI.Models;
 
@@ -12,10 +13,12 @@ public class Transacao
 
     [Required(ErrorMessage = "O título é obrigatório")]
     [StringLength(100, ErrorMessage = "O título não pode exceder 100 caracteres")]
+    [MinLength(4, ErrorMessage = "O titulo deve ter, no mínimo, {1} caracteres")]
     [Column("tra_nm_titulo")]
     public string? Titulo { get; set; }
 
     [Required(ErrorMessage = "O valor é obrigatório")]
+    [ValorMinimoTransacao]
     [Column("tra_vl_valor", TypeName = "decimal(18,2)")]
     public decimal Valor { get; set; }
 

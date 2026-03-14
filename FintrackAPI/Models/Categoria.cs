@@ -19,6 +19,7 @@ public class Categoria
 
     [Required(ErrorMessage = "O nome da categoria é obrigatório")]
     [StringLength(50, ErrorMessage = "O nome não pode exceder 50 caracteres")]
+    [MinLength(5, ErrorMessage = "O nome da categoria deve ter, no mínimo, {1} caracteres")]
     [Column("cat_nm_nome")]
     public string? Nome { get; set; }
 

@@ -19,6 +19,7 @@ public class TipoTransacao
 
     [Required(ErrorMessage = "O nome do tipo de transação é obrigatório")]
     [StringLength(50, ErrorMessage = "O nome não pode exceder 50 caracteres")]
+    [MinLength(5, ErrorMessage = "O nome do tipo de transação deve ter, no mínimo, {1} caracteres")]
     [Column("tpt_nm_nome")]
     public string? Nome { get; set; }
 
