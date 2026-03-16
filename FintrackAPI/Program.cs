@@ -2,6 +2,7 @@
 using FintrackAPI.Context;
 using FintrackAPI.Extensions;
 using FintrackAPI.Filters;
+using FintrackAPI.Logging;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,8 @@ builder.Services.AddControllers()
         .ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddScoped<ApiLoggingFilter>();
-
+builder.Logging.AddProvider(new CustomLoggerProvider(
+    new CustomLoggerProviderConfiguration { LogLevel = LogLevel.Information }));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
