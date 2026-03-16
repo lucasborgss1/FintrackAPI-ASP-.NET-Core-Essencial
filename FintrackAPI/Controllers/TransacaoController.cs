@@ -79,6 +79,7 @@ namespace FintrackAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Transacao>> PostTransacao(Transacao transacao)
         {
+            throw new Exception("Erro lancado");
             _context.Transacoes.Add(transacao);
             await _context.SaveChangesAsync();
 
