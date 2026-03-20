@@ -6,7 +6,6 @@ using FintrackAPI.Logging;
 using FintrackAPI.Repositories;
 using FintrackAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -5,12 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FintrackAPI.Repositories;
 
-public class CategoriaRepository : Repository<Categoria>, ICategoriaRepository
+public class CategoriaRepository(AppDbContext context) : Repository<Categoria>(context), ICategoriaRepository
 {
-    public CategoriaRepository(AppDbContext context) : base(context)
-    {
-    }
-
     public async Task<IEnumerable<Categoria>> GetCategoriasComTransacoesAsync()
     {
         return await _context.Categorias
@@ -26,5 +22,4 @@ public class CategoriaRepository : Repository<Categoria>, ICategoriaRepository
             .Include(c => c.Transacoes)
             .FirstOrDefaultAsync(c => c.CategoriaId == id);
     }
-
 }

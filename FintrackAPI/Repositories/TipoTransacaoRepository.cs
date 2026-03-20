@@ -5,12 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FintrackAPI.Repositories;
 
-public class TipoTransacaoRepository : Repository<TipoTransacao>, ITipoTransacaoRepository
+public class TipoTransacaoRepository(AppDbContext context) : Repository<TipoTransacao>(context), ITipoTransacaoRepository
 {
-    public TipoTransacaoRepository(AppDbContext context) : base(context)
-    {
-    }
-
     public async Task<IEnumerable<TipoTransacao>> GetTipoTransacoesComTransacoesAsync()
     {
         return await _context.TipoTransacoes
