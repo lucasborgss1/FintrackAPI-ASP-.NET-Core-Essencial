@@ -56,10 +56,10 @@ namespace FintrackAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Transacao>> PostTransacao(Transacao transacao)
         {
-            _repository.Create(transacao);
+            var transacaoCriada = _repository.Create(transacao);
             await _repository.SaveChangesAsync();
 
-            return CreatedAtAction("GetTransacao", new { id = transacao.TransacaoId }, transacao);
+            return CreatedAtAction("GetTransacao", new { id = transacaoCriada.TransacaoId }, transacaoCriada);
         }
 
         // DELETE: v1/api/Transacao/{valor}
