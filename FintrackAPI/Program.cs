@@ -6,6 +6,7 @@ using FintrackAPI.Logging;
 using FintrackAPI.Repositories;
 using FintrackAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,13 +14,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add(typeof(ApiExceptionFilter));
+    options.Filters.Add(typeof(ApiLoggingFilter)); 
 })
     .AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
-builder.Services.AddScoped<ApiLoggingFilter>();
 builder.Logging.AddProvider(new CustomLoggerProvider(
     new CustomLoggerProviderConfiguration { LogLevel = LogLevel.Information }));
 builder.Services.AddEndpointsApiExplorer();
