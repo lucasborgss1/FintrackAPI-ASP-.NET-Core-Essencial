@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using FintrackAPI.Context;
 using FintrackAPI.Models;
+using FintrackAPI.Repositories.Interfaces;
 
 namespace FintrackAPI.Controllers
 {
@@ -9,40 +8,33 @@ namespace FintrackAPI.Controllers
     [ApiController]
     public class TransacaoController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly ITransacaoRepository _repository;
 
-        public TransacaoController(AppDbContext context)
+        public TransacaoController(ITransacaoRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: v1/api/Transacao
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Transacao>>> GetTransacoes()
         {
-            return await _context.Transacoes
-                .AsNoTracking()
-                .Include(t => t.Categoria)
-                .Include(t => t.TipoTransacao)
-                .ToListAsync();
+            var transacoes = await _repository.GetTransacoesComRelacionamentosAsync();
+            return Ok(transacoes);
         }
 
         // GET: v1/api/Transacao/{valor}
         [HttpGet("{id:long:min(1000000001):length(10)}")]
         public async Task<ActionResult<Transacao>> GetTransacao(long id)
         {
-            var transacao = await _context.Transacoes
-                .AsNoTracking()
-                .Include(t => t.Categoria)
-                .Include(t => t.TipoTransacao)
-                .FirstOrDefaultAsync(t => t.TransacaoId == id);
+            var transacao = await _repository.GetTransacaoComRelacionamentosAsync(id);
 
             if (transacao == null)
             {
                 return NotFound();
             }
 
-            return transacao;
+            return Ok(transacao);
         }
 
         // PUT: v1/api/Transacao/{valor}
@@ -54,23 +46,8 @@ namespace FintrackAPI.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(transacao).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TransacaoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+           _repository.Update(transacao);
+            await _repository.SaveChangesAsync();
 
             return NoContent();
         }
@@ -79,8 +56,8 @@ namespace FintrackAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Transacao>> PostTransacao(Transacao transacao)
         {
-            _context.Transacoes.Add(transacao);
-            await _context.SaveChangesAsync();
+            _repository.Create(transacao);
+            await _repository.SaveChangesAsync();
 
             return CreatedAtAction("GetTransacao", new { id = transacao.TransacaoId }, transacao);
         }
@@ -89,21 +66,17 @@ namespace FintrackAPI.Controllers
         [HttpDelete("{id:long:min(1000000001):length(10)}")]
         public async Task<IActionResult> DeleteTransacao(long id)
         {
-            var transacao = await _context.Transacoes.FindAsync(id);
+            var transacao = await _repository.GetAsync(t => t.TransacaoId == id);
+
             if (transacao == null)
             {
                 return NotFound();
             }
 
-            _context.Transacoes.Remove(transacao);
-            await _context.SaveChangesAsync();
+            _repository.Delete(transacao);
+            await _repository.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool TransacaoExists(long id)
-        {
-            return _context.Transacoes.Any(e => e.TransacaoId == id);
         }
     }
 }

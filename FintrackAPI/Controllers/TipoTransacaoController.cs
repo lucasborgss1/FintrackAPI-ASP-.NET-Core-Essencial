@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using FintrackAPI.Context;
 using FintrackAPI.Models;
+using FintrackAPI.Repositories.Interfaces;
 
 namespace FintrackAPI.Controllers
 {
@@ -9,41 +8,36 @@ namespace FintrackAPI.Controllers
     [ApiController]
     public class TipoTransacaoController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly ITipoTransacaoRepository _repository;
 
-        public TipoTransacaoController(AppDbContext context)
+        public TipoTransacaoController(ITipoTransacaoRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: v1/api/TipoTransacao
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TipoTransacao>>> GetTipoTransacoes()
         {
-            return await _context.TipoTransacoes
-                .AsNoTracking()
-                .Include(t => t.Transacoes)
-                .ToListAsync();
+            var tipoTransacoes = await _repository.GetTipoTransacoesComTransacoesAsync();
+            return Ok(tipoTransacoes);
         }
 
-        // GET: v1/api/TipoTransacao/{valor}
+        // GET: v1/api/TipoTransacao/{id}
         [HttpGet("{id:long:min(1000000001):length(10)}")]
         public async Task<ActionResult<TipoTransacao>> GetTipoTransacao(long id)
         {
-            var tipoTransacao = await _context.TipoTransacoes
-                .AsNoTracking()
-                .Include(t => t.Transacoes)
-                .FirstOrDefaultAsync(t => t.TipoTransacaoId == id);
+            var tipoTransacao = await _repository.GetTipoTransacaoComTransacoesAsync(id);
 
             if (tipoTransacao == null)
             {
                 return NotFound();
             }
 
-            return tipoTransacao;
+            return Ok(tipoTransacao);
         }
 
-        // PUT: v1/api/TipoTransacao/{valor}
+        // PUT: v1/api/TipoTransacao/{id}
         [HttpPut("{id:long:min(1000000001):length(10)}")]
         public async Task<IActionResult> PutTipoTransacao(long id, TipoTransacao tipoTransacao)
         {
@@ -52,23 +46,8 @@ namespace FintrackAPI.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(tipoTransacao).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TipoTransacaoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _repository.Update(tipoTransacao);
+            await _repository.SaveChangesAsync();
 
             return NoContent();
         }
@@ -77,31 +56,27 @@ namespace FintrackAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<TipoTransacao>> PostTipoTransacao(TipoTransacao tipoTransacao)
         {
-            _context.TipoTransacoes.Add(tipoTransacao);
-            await _context.SaveChangesAsync();
+            _repository.Create(tipoTransacao);
+            await _repository.SaveChangesAsync();
 
             return CreatedAtAction("GetTipoTransacao", new { id = tipoTransacao.TipoTransacaoId }, tipoTransacao);
         }
 
-        // DELETE: v1/api/TipoTransacao/{valor}
+        // DELETE: v1/api/TipoTransacao/{id}
         [HttpDelete("{id:long:min(1000000001):length(10)}")]
         public async Task<IActionResult> DeleteTipoTransacao(long id)
         {
-            var tipoTransacao = await _context.TipoTransacoes.FindAsync(id);
+            var tipoTransacao = await _repository.GetAsync(t => t.TipoTransacaoId == id);
+
             if (tipoTransacao == null)
             {
                 return NotFound();
             }
 
-            _context.TipoTransacoes.Remove(tipoTransacao);
-            await _context.SaveChangesAsync();
+            _repository.Delete(tipoTransacao);
+            await _repository.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool TipoTransacaoExists(long id)
-        {
-            return _context.TipoTransacoes.Any(e => e.TipoTransacaoId == id);
         }
     }
 }

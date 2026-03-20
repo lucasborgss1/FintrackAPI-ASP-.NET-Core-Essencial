@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using FintrackAPI.Context;
 using FintrackAPI.Models;
+using FintrackAPI.Repositories.Interfaces;
 
 namespace FintrackAPI.Controllers
 {
@@ -9,41 +8,36 @@ namespace FintrackAPI.Controllers
     [ApiController]
     public class CategoriaController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly ICategoriaRepository _repository;
 
-        public CategoriaController(AppDbContext context)
+        public CategoriaController(ICategoriaRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-        // GET: v1/api/Categorias
+        // GET: v1/api/Categoria
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
         {
-            return await _context.Categorias
-                .AsNoTracking()
-                .Include(c => c.Transacoes)
-                .ToListAsync();
+            var categorias = await _repository.GetCategoriasComTransacoesAsync();
+            return Ok(categorias);
         }
 
-        // GET: v1/api/Categorias/{valor}
+        // GET: v1/api/Categoria/{id}
         [HttpGet("{id:long:min(1000000001):length(10)}")]
         public async Task<ActionResult<Categoria>> GetCategoria(long id)
         {
-            var categoria = await _context.Categorias
-                .AsNoTracking()
-                .Include(c => c.Transacoes)
-                .FirstOrDefaultAsync(c => c.CategoriaId == id);
+            var categoria = await _repository.GetCategoriaComTransacoesAsync(id);
 
             if (categoria == null)
             {
                 return NotFound();
             }
 
-            return categoria;
+            return Ok(categoria);
         }
 
-        // PUT: v1/api/Categorias/{valor}
+        // PUT: v1/api/Categoria/{id}
         [HttpPut("{id:long:min(1000000001):length(10)}")]
         public async Task<IActionResult> PutCategoria(long id, Categoria categoria)
         {
@@ -52,56 +46,37 @@ namespace FintrackAPI.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(categoria).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoriaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _repository.Update(categoria);
+            await _repository.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // POST: v1/api/Categorias
+        // POST: v1/api/Categoria
         [HttpPost]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
         {
-            _context.Categorias.Add(categoria);
-            await _context.SaveChangesAsync();
+            _repository.Create(categoria);
+            await _repository.SaveChangesAsync();
 
             return CreatedAtAction("GetCategoria", new { id = categoria.CategoriaId }, categoria);
         }
 
-        // DELETE: v1/api/Categorias/{valor}
+        // DELETE: v1/api/Categoria/{id}
         [HttpDelete("{id:long:min(1000000001):length(10)}")]
         public async Task<IActionResult> DeleteCategoria(long id)
         {
-            var categoria = await _context.Categorias.FindAsync(id);
+            var categoria = await _repository.GetAsync(c => c.CategoriaId == id);
+
             if (categoria == null)
             {
                 return NotFound();
             }
 
-            _context.Categorias.Remove(categoria);
-            await _context.SaveChangesAsync();
+            _repository.Delete(categoria);
+            await _repository.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool CategoriaExists(long id)
-        {
-            return _context.Categorias.Any(e => e.CategoriaId == id);
         }
     }
 }
