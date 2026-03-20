@@ -1,4 +1,4 @@
-                                using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using FintrackAPI.Context;
 using FintrackAPI.Extensions;
 using FintrackAPI.Filters;
@@ -8,10 +8,14 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers()
-    .AddJsonOptions(options => 
-        options.JsonSerializerOptions
-        .ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(ApiExceptionFilter));
+})
+    .AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 builder.Services.AddScoped<ApiLoggingFilter>();
 builder.Logging.AddProvider(new CustomLoggerProvider(
@@ -22,7 +26,7 @@ builder.Services.AddSwaggerGen();
 string? mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services
-    .AddDbContext<AppDbContext>(options => 
+    .AddDbContext<AppDbContext>(options =>
         options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
 
 var app = builder.Build();
