@@ -8,18 +8,18 @@ namespace FintrackAPI.Controllers
     [ApiController]
     public class TransacaoController : ControllerBase
     {
-        private readonly ITransacaoRepository _repository;
+        private readonly IUnitOfWork _ouf;
 
-        public TransacaoController(ITransacaoRepository repository)
+        public TransacaoController(IUnitOfWork ouf)
         {
-            _repository = repository;
+            _ouf = ouf;
         }
 
         // GET: v1/api/Transacao
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Transacao>>> GetTransacoes()
         {
-            var transacoes = await _repository.GetTransacoesComRelacionamentosAsync();
+            var transacoes = await _ouf.TransacaoRepository.GetTransacoesComRelacionamentosAsync();
             return Ok(transacoes);
         }
 
@@ -27,7 +27,7 @@ namespace FintrackAPI.Controllers
         [HttpGet("{id:long:min(1000000001):length(10)}")]
         public async Task<ActionResult<Transacao>> GetTransacao(long id)
         {
-            var transacao = await _repository.GetTransacaoComRelacionamentosAsync(id);
+            var transacao = await _ouf.TransacaoRepository.GetTransacaoComRelacionamentosAsync(id);
 
             if (transacao == null)
             {
@@ -46,8 +46,8 @@ namespace FintrackAPI.Controllers
                 return BadRequest();
             }
 
-           _repository.Update(transacao);
-            await _repository.SaveChangesAsync();
+           _ouf.TransacaoRepository.Update(transacao);
+            await _ouf.Commit();
 
             return NoContent();
         }
@@ -56,8 +56,8 @@ namespace FintrackAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Transacao>> PostTransacao(Transacao transacao)
         {
-            var transacaoCriada = _repository.Create(transacao);
-            await _repository.SaveChangesAsync();
+            var transacaoCriada = _ouf.TransacaoRepository.Create(transacao);
+            await _ouf.Commit();
 
             return CreatedAtAction("GetTransacao", new { id = transacaoCriada.TransacaoId }, transacaoCriada);
         }
@@ -66,15 +66,15 @@ namespace FintrackAPI.Controllers
         [HttpDelete("{id:long:min(1000000001):length(10)}")]
         public async Task<IActionResult> DeleteTransacao(long id)
         {
-            var transacao = await _repository.GetAsync(t => t.TransacaoId == id);
+            var transacao = await _ouf.TransacaoRepository.GetAsync(t => t.TransacaoId == id);
 
             if (transacao == null)
             {
                 return NotFound();
             }
 
-            _repository.Delete(transacao);
-            await _repository.SaveChangesAsync();
+            _ouf.TransacaoRepository.Delete(transacao);
+            await _ouf.Commit();
 
             return NoContent();
         }

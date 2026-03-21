@@ -36,9 +36,4 @@ public class Repository<T>(AppDbContext context) : IRepository<T> where T : clas
         _context.Set<T>().Remove(entity);
         return entity;
     }
-
-    public async Task SaveChangesAsync()
-    {
-        await _context.SaveChangesAsync();
-    }
 }

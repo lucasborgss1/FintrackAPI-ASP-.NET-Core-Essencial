@@ -8,18 +8,18 @@ namespace FintrackAPI.Controllers
     [ApiController]
     public class CategoriaController : ControllerBase
     {
-        private readonly ICategoriaRepository _repository;
+        private readonly IUnitOfWork _uof;
 
-        public CategoriaController(ICategoriaRepository repository)
+        public CategoriaController(IUnitOfWork uof)
         {
-            _repository = repository;
+            _uof = uof;
         }
 
         // GET: v1/api/Categoria
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
         {
-            var categorias = await _repository.GetCategoriasComTransacoesAsync();
+            var categorias = await _uof.CategoriaRepository.GetCategoriasComTransacoesAsync();
             return Ok(categorias);
         }
 
@@ -27,7 +27,7 @@ namespace FintrackAPI.Controllers
         [HttpGet("{id:long:min(1000000001):length(10)}")]
         public async Task<ActionResult<Categoria>> GetCategoria(long id)
         {
-            var categoria = await _repository.GetCategoriaComTransacoesAsync(id);
+            var categoria = await _uof.CategoriaRepository.GetCategoriaComTransacoesAsync(id);
 
             if (categoria == null)
             {
@@ -46,8 +46,8 @@ namespace FintrackAPI.Controllers
                 return BadRequest();
             }
 
-            _repository.Update(categoria);
-            await _repository.SaveChangesAsync();
+            _uof.CategoriaRepository.Update(categoria);
+            await _uof.Commit();
 
             return NoContent();
         }
@@ -56,8 +56,8 @@ namespace FintrackAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
         {
-            var categoriaCriada = _repository.Create(categoria);
-            await _repository.SaveChangesAsync();
+            var categoriaCriada = _uof.CategoriaRepository.Create(categoria);
+            await _uof.Commit();
 
             return CreatedAtAction("GetCategoria", new { id = categoriaCriada.CategoriaId }, categoriaCriada);
         }
@@ -66,15 +66,15 @@ namespace FintrackAPI.Controllers
         [HttpDelete("{id:long:min(1000000001):length(10)}")]
         public async Task<IActionResult> DeleteCategoria(long id)
         {
-            var categoria = await _repository.GetAsync(c => c.CategoriaId == id);
+            var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
 
             if (categoria == null)
             {
                 return NotFound();
             }
 
-            _repository.Delete(categoria);
-            await _repository.SaveChangesAsync();
+            _uof.CategoriaRepository.Delete(categoria);
+            await _uof.Commit();
 
             return NoContent();
         }
