@@ -3,6 +3,7 @@ using FintrackAPI.Context;
 using FintrackAPI.Extensions;
 using FintrackAPI.Filters;
 using FintrackAPI.Logging;
+using FintrackAPI.Mappings;
 using FintrackAPI.Repositories;
 using FintrackAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,7 @@ builder.Services
         options.UseMySql(mySqlConnection, ServerVersion.AutoDetect(mySqlConnection)));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

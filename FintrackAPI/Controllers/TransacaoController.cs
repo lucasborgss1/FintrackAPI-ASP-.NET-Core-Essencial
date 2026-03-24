@@ -1,31 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using FintrackAPI.DTOs.Transacao;
 using FintrackAPI.Models;
 using FintrackAPI.Repositories.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FintrackAPI.Controllers
 {
     [Route("v1/api/[controller]")]
     [ApiController]
-    public class TransacaoController : ControllerBase
+    public class TransacaoController(IUnitOfWork ouf, IMapper mapper) : ControllerBase
     {
-        private readonly IUnitOfWork _ouf;
-
-        public TransacaoController(IUnitOfWork ouf)
-        {
-            _ouf = ouf;
-        }
+        private readonly IUnitOfWork _ouf = ouf;
+        private readonly IMapper _mapper = mapper;
 
         // GET: v1/api/Transacao
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Transacao>>> GetTransacoes()
+        public async Task<ActionResult<IEnumerable<TransacaoResponseDTO>>> GetTransacoes()
         {
             var transacoes = await _ouf.TransacaoRepository.GetTransacoesComRelacionamentosAsync();
-            return Ok(transacoes);
+            var transacoesDTO = _mapper.Map<IEnumerable<TransacaoResponseDTO>>(transacoes);
+            return Ok(transacoesDTO);
         }
 
-        // GET: v1/api/Transacao/{valor}
+        // GET: v1/api/Transacao/{id}
         [HttpGet("{id:long:min(1000000001):length(10)}")]
-        public async Task<ActionResult<Transacao>> GetTransacao(long id)
+        public async Task<ActionResult<TransacaoResponseDTO>> GetTransacao(long id)
         {
             var transacao = await _ouf.TransacaoRepository.GetTransacaoComRelacionamentosAsync(id);
 
@@ -34,19 +33,18 @@ namespace FintrackAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(transacao);
+            var transacaoDTO = _mapper.Map<TransacaoResponseDTO>(transacao);
+            return Ok(transacaoDTO);
         }
 
-        // PUT: v1/api/Transacao/{valor}
+        // PUT: v1/api/Transacao/{id}
         [HttpPut("{id:long:min(1000000001):length(10)}")]
-        public async Task<IActionResult> PutTransacao(long id, Transacao transacao)
+        public async Task<IActionResult> PutTransacao(long id, TransacaoRequestDTO transacaoDTO)
         {
-            if (id != transacao.TransacaoId)
-            {
-                return BadRequest();
-            }
+            var transacao = _mapper.Map<Transacao>(transacaoDTO);
+            transacao.TransacaoId = id;
 
-           _ouf.TransacaoRepository.Update(transacao);
+            _ouf.TransacaoRepository.Update(transacao);
             await _ouf.Commit();
 
             return NoContent();
@@ -54,15 +52,17 @@ namespace FintrackAPI.Controllers
 
         // POST: v1/api/Transacao
         [HttpPost]
-        public async Task<ActionResult<Transacao>> PostTransacao(Transacao transacao)
+        public async Task<ActionResult<TransacaoResponseDTO>> PostTransacao(TransacaoRequestDTO transacaoDTO)
         {
+            var transacao = _mapper.Map<Transacao>(transacaoDTO);
             var transacaoCriada = _ouf.TransacaoRepository.Create(transacao);
             await _ouf.Commit();
 
-            return CreatedAtAction("GetTransacao", new { id = transacaoCriada.TransacaoId }, transacaoCriada);
+            var transacaoResponse = _mapper.Map<TransacaoResponseDTO>(transacaoCriada);
+            return CreatedAtAction("GetTransacao", new { id = transacaoCriada.TransacaoId }, transacaoResponse);
         }
 
-        // DELETE: v1/api/Transacao/{valor}
+        // DELETE: v1/api/Transacao/{id}
         [HttpDelete("{id:long:min(1000000001):length(10)}")]
         public async Task<IActionResult> DeleteTransacao(long id)
         {

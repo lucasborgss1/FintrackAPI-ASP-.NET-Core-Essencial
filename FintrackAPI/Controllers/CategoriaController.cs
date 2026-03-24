@@ -1,31 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using FintrackAPI.DTOs.Categoria;
 using FintrackAPI.Models;
 using FintrackAPI.Repositories.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FintrackAPI.Controllers
 {
     [Route("v1/api/[controller]")]
     [ApiController]
-    public class CategoriaController : ControllerBase
+    public class CategoriaController(IUnitOfWork uof, IMapper mapper) : ControllerBase
     {
-        private readonly IUnitOfWork _uof;
-
-        public CategoriaController(IUnitOfWork uof)
-        {
-            _uof = uof;
-        }
+        private readonly IUnitOfWork _uof = uof;
+        private readonly IMapper _mapper = mapper;
 
         // GET: v1/api/Categoria
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Categoria>>> GetCategorias()
+        public async Task<ActionResult<IEnumerable<CategoriaResponseDTO>>> GetCategorias()
         {
             var categorias = await _uof.CategoriaRepository.GetCategoriasComTransacoesAsync();
-            return Ok(categorias);
+            var categoriasDTO = _mapper.Map<IEnumerable<CategoriaResponseDTO>>(categorias);
+            return Ok(categoriasDTO);
         }
 
         // GET: v1/api/Categoria/{id}
         [HttpGet("{id:long:min(1000000001):length(10)}")]
-        public async Task<ActionResult<Categoria>> GetCategoria(long id)
+        public async Task<ActionResult<CategoriaResponseDTO>> GetCategoria(long id)
         {
             var categoria = await _uof.CategoriaRepository.GetCategoriaComTransacoesAsync(id);
 
@@ -34,17 +33,16 @@ namespace FintrackAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(categoria);
+            var categoriaDTO = _mapper.Map<CategoriaResponseDTO>(categoria);
+            return Ok(categoriaDTO);
         }
 
         // PUT: v1/api/Categoria/{id}
         [HttpPut("{id:long:min(1000000001):length(10)}")]
-        public async Task<IActionResult> PutCategoria(long id, Categoria categoria)
+        public async Task<IActionResult> PutCategoria(long id, CategoriaRequestDTO categoriaDTO)
         {
-            if (id != categoria.CategoriaId)
-            {
-                return BadRequest();
-            }
+            var categoria = _mapper.Map<Categoria>(categoriaDTO);
+            categoria.CategoriaId = id;
 
             _uof.CategoriaRepository.Update(categoria);
             await _uof.Commit();
@@ -54,12 +52,14 @@ namespace FintrackAPI.Controllers
 
         // POST: v1/api/Categoria
         [HttpPost]
-        public async Task<ActionResult<Categoria>> PostCategoria(Categoria categoria)
+        public async Task<ActionResult<CategoriaResponseDTO>> PostCategoria(CategoriaRequestDTO categoriaDTO)
         {
+            var categoria = _mapper.Map<Categoria>(categoriaDTO);
             var categoriaCriada = _uof.CategoriaRepository.Create(categoria);
             await _uof.Commit();
 
-            return CreatedAtAction("GetCategoria", new { id = categoriaCriada.CategoriaId }, categoriaCriada);
+            var categoriaResponse = _mapper.Map<CategoriaResponseDTO>(categoriaCriada);
+            return CreatedAtAction("GetCategoria", new { id = categoriaCriada.CategoriaId }, categoriaResponse);
         }
 
         // DELETE: v1/api/Categoria/{id}
