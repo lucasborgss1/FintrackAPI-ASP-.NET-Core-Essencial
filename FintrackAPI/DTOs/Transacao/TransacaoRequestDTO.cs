@@ -17,8 +17,7 @@ public class TransacaoRequestDTO
     [Required(ErrorMessage = "A data é obrigatória")]
     public DateOnly Data { get; set; }
 
-    [Required(ErrorMessage = "A categoria é obrigatória")]
-    public long CategoriaId { get; set; }
+    public long? CategoriaId { get; set; }
 
     [Required(ErrorMessage = "O tipo de transação é obrigatório")]
     public long TipoTransacaoId { get; set; }

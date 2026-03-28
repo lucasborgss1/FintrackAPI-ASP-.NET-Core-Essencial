@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FintrackAPI.DTOs.Transacao;
 using FintrackAPI.Models;
+using FintrackAPI.Pagination;
 using FintrackAPI.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,15 @@ namespace FintrackAPI.Controllers
         public async Task<ActionResult<IEnumerable<TransacaoResponseDTO>>> GetTransacoes()
         {
             var transacoes = await _ouf.TransacaoRepository.GetTransacoesComRelacionamentosAsync();
+            var transacoesDTO = _mapper.Map<IEnumerable<TransacaoResponseDTO>>(transacoes);
+            return Ok(transacoesDTO);
+        }
+
+        // GET: v1/api/Transacao/pagination
+        [HttpGet("pagination")]
+        public async Task<ActionResult<IEnumerable<TransacaoResponseDTO>>> GetTransacoes([FromQuery] TransacaoParameters transacaoParameters)
+        {
+            var transacoes = await _ouf.TransacaoRepository.GetAllAsync(transacaoParameters);
             var transacoesDTO = _mapper.Map<IEnumerable<TransacaoResponseDTO>>(transacoes);
             return Ok(transacoesDTO);
         }
@@ -55,11 +65,12 @@ namespace FintrackAPI.Controllers
         public async Task<ActionResult<TransacaoResponseDTO>> PostTransacao(TransacaoRequestDTO transacaoDTO)
         {
             var transacao = _mapper.Map<Transacao>(transacaoDTO);
-            var transacaoCriada = _ouf.TransacaoRepository.Create(transacao);
+            _ouf.TransacaoRepository.Create(transacao);
             await _ouf.Commit();
 
+            var transacaoCriada = await _ouf.TransacaoRepository.GetTransacaoComRelacionamentosAsync(transacao.TransacaoId);
             var transacaoResponse = _mapper.Map<TransacaoResponseDTO>(transacaoCriada);
-            return CreatedAtAction("GetTransacao", new { id = transacaoCriada.TransacaoId }, transacaoResponse);
+            return CreatedAtAction("GetTransacao", new { id = transacaoCriada!.TransacaoId }, transacaoResponse);
         }
 
         // DELETE: v1/api/Transacao/{id}

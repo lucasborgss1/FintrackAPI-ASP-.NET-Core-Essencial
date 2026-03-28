@@ -26,9 +26,8 @@ public class Transacao
     [Column("tra_dt_data")]  
     public DateOnly Data { get; set; }
 
-    [Required(ErrorMessage = "A categoria é obrigatória")]
     [Column("tra_id_categoria")]
-    public long CategoriaId { get; set; }
+    public long? CategoriaId { get; set; }
 
     [ForeignKey("CategoriaId")]
     public Categoria? Categoria { get; set; }
