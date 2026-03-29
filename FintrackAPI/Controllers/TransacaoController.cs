@@ -16,18 +16,22 @@ namespace FintrackAPI.Controllers
 
         // GET: v1/api/Transacao
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TransacaoResponseDTO>>> GetTransacoes()
-        {
-            var transacoes = await _ouf.TransacaoRepository.GetTransacoesComRelacionamentosAsync();
-            var transacoesDTO = _mapper.Map<IEnumerable<TransacaoResponseDTO>>(transacoes);
-            return Ok(transacoesDTO);
-        }
-
-        // GET: v1/api/Transacao/pagination
-        [HttpGet("pagination")]
         public async Task<ActionResult<IEnumerable<TransacaoResponseDTO>>> GetTransacoes([FromQuery] TransacaoParameters transacaoParameters)
         {
             var transacoes = await _ouf.TransacaoRepository.GetAllAsync(transacaoParameters);
+
+            var metadata = new
+            {
+                transacoes.TotalCount,
+                transacoes.PageSize,
+                transacoes.CurrentPage,
+                transacoes.TotalPages,
+                transacoes.HasNext,
+                transacoes.HasPrevious
+            };
+
+            Response.Headers.Append("X-Pagination", System.Text.Json.JsonSerializer.Serialize(metadata));
+
             var transacoesDTO = _mapper.Map<IEnumerable<TransacaoResponseDTO>>(transacoes);
             return Ok(transacoesDTO);
         }
@@ -39,9 +43,13 @@ namespace FintrackAPI.Controllers
             var transacao = await _ouf.TransacaoRepository.GetTransacaoComRelacionamentosAsync(id);
 
             if (transacao == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Transação não encontrada.",
+                    Detail = $"Nenhuma transação encontrada com o id {id}.",
+                    Instance = HttpContext.Request.Path
+                });
 
             var transacaoDTO = _mapper.Map<TransacaoResponseDTO>(transacao);
             return Ok(transacaoDTO);
@@ -80,9 +88,13 @@ namespace FintrackAPI.Controllers
             var transacao = await _ouf.TransacaoRepository.GetAsync(t => t.TransacaoId == id);
 
             if (transacao == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Transação não encontrada.",
+                    Detail = $"Nenhuma transação encontrada com o id {id}.",
+                    Instance = HttpContext.Request.Path
+                });
 
             _ouf.TransacaoRepository.Delete(transacao);
             await _ouf.Commit();

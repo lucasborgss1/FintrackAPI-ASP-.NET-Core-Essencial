@@ -27,11 +27,14 @@ public class TransacaoRepository(AppDbContext context) : Repository<Transacao>(c
             .FirstOrDefaultAsync(t => t.TransacaoId == id);
     }
 
-    public async Task<IEnumerable<Transacao>> GetAllAsync(TransacaoParameters transacaoParams)
+    public async Task<PagedList<Transacao>> GetAllAsync(TransacaoParameters transacaoParams)
     {
-        return await _context.Transacoes
-            .OrderBy(t => t.Titulo)
-            .Skip((transacaoParams.PageNumber - 1) * transacaoParams.PageSize)
-            .Take(transacaoParams.PageSize).ToListAsync();
+        var transacoes =  _context.Transacoes
+            .AsNoTracking()
+            .Include(t => t.Categoria)
+            .Include(t => t.TipoTransacao)
+            .OrderBy(t => t.Data);
+
+        return await PagedList<Transacao>.ToPagedListAsync(transacoes, transacaoParams.PageNumber, transacaoParams.PageSize);
     }
 }

@@ -30,8 +30,15 @@ namespace FintrackAPI.Controllers
 
             if (tipoTransacao == null)
             {
-                return NotFound();
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Tipo de transação não encontrado.",
+                    Detail = $"Nenhum tipo de transação não encontrado com o id {id}.",
+                    Instance = HttpContext.Request.Path
+                });
             }
+
 
             var tipoTransacaoDTO = _mapper.Map<TipoTransacaoResponseDTO>(tipoTransacao);
             return Ok(tipoTransacaoDTO);
@@ -70,7 +77,13 @@ namespace FintrackAPI.Controllers
 
             if (tipoTransacao == null)
             {
-                return NotFound();
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Tipo de transação não encontrado.",
+                    Detail = $"Nenhum tipo de transação não encontrado com o id {id}.",
+                    Instance = HttpContext.Request.Path
+                });
             }
 
             _ouf.TipoTransacaoRepository.Delete(tipoTransacao);

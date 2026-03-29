@@ -29,9 +29,13 @@ namespace FintrackAPI.Controllers
             var categoria = await _uof.CategoriaRepository.GetCategoriaComTransacoesAsync(id);
 
             if (categoria == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Categoria não encontrada.",
+                    Detail = $"Nenhuma categoria encontrada com o id {id}.",
+                    Instance = HttpContext.Request.Path
+                });
 
             var categoriaDTO = _mapper.Map<CategoriaResponseDTO>(categoria);
             return Ok(categoriaDTO);
@@ -69,9 +73,13 @@ namespace FintrackAPI.Controllers
             var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);
 
             if (categoria == null)
-            {
-                return NotFound();
-            }
+                return NotFound(new ProblemDetails
+                {
+                    Status = StatusCodes.Status404NotFound,
+                    Title = "Categoria não encontrada.",
+                    Detail = $"Nenhuma categoria encontrada com o id {id}.",
+                    Instance = HttpContext.Request.Path
+                });
 
             _uof.CategoriaRepository.Delete(categoria);
             await _uof.Commit();
