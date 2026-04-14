@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using FintrackAPI.Models;
 using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
 
 namespace FintrackAPI.Extensions;
 
