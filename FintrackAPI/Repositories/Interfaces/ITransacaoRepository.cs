@@ -7,6 +7,7 @@ public interface ITransacaoRepository : IRepository<Transacao>
 {
     //Task<IEnumerable<Transacao>> GetAllAsync(TransacaoParameters transacaoParams);
     Task<PagedList<Transacao>> GetAllAsync(TransacaoParameters transacaoParams);
-    Task<IEnumerable<Transacao>> GetTransacoesComRelacionamentosAsync();
+    //Task<IEnumerable<Transacao>> GetTransacoesComRelacionamentosAsync();
+    Task<PagedList<Transacao>> GetTransacoesFiltroData(TransacaoDataParameters transacaoFiltroData);
     Task<Transacao?> GetTransacaoComRelacionamentosAsync(long id);
 }

@@ -16,9 +16,31 @@ namespace FintrackAPI.Controllers
 
         // GET: v1/api/Transacao
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TransacaoResponseDTO>>> GetTransacoes([FromQuery] TransacaoParameters transacaoParameters)
+        public async Task<ActionResult<IEnumerable<TransacaoResponseDTO>>> GetTransacoes([FromQuery] TransacaoParameters transacaoParams)
         {
-            var transacoes = await _ouf.TransacaoRepository.GetAllAsync(transacaoParameters);
+            var transacoes = await _ouf.TransacaoRepository.GetAllAsync(transacaoParams);
+
+            var metadata = new
+            {
+                transacoes.TotalCount,
+                transacoes.PageSize,
+                transacoes.CurrentPage,
+                transacoes.TotalPages,
+                transacoes.HasNext,
+                transacoes.HasPrevious
+            };
+
+            Response.Headers.Append("X-Pagination", System.Text.Json.JsonSerializer.Serialize(metadata));
+
+            var transacoesDTO = _mapper.Map<IEnumerable<TransacaoResponseDTO>>(transacoes);
+            return Ok(transacoesDTO);
+        }
+
+        // GET: v1/api/Transacao/filtro/data
+        [HttpGet("filtro/data")]
+        public async Task<ActionResult<IEnumerable<TransacaoResponseDTO>>> GetTransacoesFiltroData([FromQuery] TransacaoDataParameters transacaoFiltroData)
+        {
+            var transacoes = await _ouf.TransacaoRepository.GetTransacoesFiltroData(transacaoFiltroData);
 
             var metadata = new
             {
