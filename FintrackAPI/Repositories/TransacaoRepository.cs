@@ -21,7 +21,7 @@ public class TransacaoRepository(AppDbContext context) : Repository<Transacao>(c
     }
    */
 
-
+    /// <inheritdoc />
     public async Task<Transacao?> GetTransacaoComRelacionamentosAsync(long id)
     {
         return await _context.Transacoes
@@ -31,7 +31,7 @@ public class TransacaoRepository(AppDbContext context) : Repository<Transacao>(c
             .FirstOrDefaultAsync(t => t.TransacaoId == id);
     }
 
-
+    /// <inheritdoc />
     public async Task<PagedList<Transacao>> GetAllAsync(TransacaoParameters transacaoParams)
     {
         var transacoes = _context.Transacoes
@@ -43,9 +43,10 @@ public class TransacaoRepository(AppDbContext context) : Repository<Transacao>(c
         return await PagedList<Transacao>.ToPagedListAsync(transacoes, transacaoParams.PageNumber, transacaoParams.PageSize);
     }
 
+    /// <inheritdoc />
     public async Task<PagedList<Transacao>> GetTransacoesFiltroData(TransacaoDataParameters transacaoFiltroData)
     {
-        var trasacoes =  _context.Transacoes
+        var transacoes = _context.Transacoes
             .AsNoTracking()
             .Include(t => t.Categoria)
             .Include(t => t.TipoTransacao)
@@ -56,15 +57,15 @@ public class TransacaoRepository(AppDbContext context) : Repository<Transacao>(c
         {
             var dataFiltro = transacaoFiltroData.Data.Value;
 
-            trasacoes = transacaoFiltroData.DataCriterio switch
+            transacoes = transacaoFiltroData.DataCriterio switch
             {
-                DataCriterio.AntesDe  => trasacoes.Where(t => t.Data < dataFiltro),
-                DataCriterio.DepoisDe => trasacoes.Where(t => t.Data > dataFiltro),
-                DataCriterio.IgualA   => trasacoes.Where(t => t.Data == dataFiltro),
-                _                     => trasacoes
+                DataCriterio.AntesDe => transacoes.Where(t => t.Data < dataFiltro),
+                DataCriterio.DepoisDe => transacoes.Where(t => t.Data > dataFiltro),
+                DataCriterio.IgualA => transacoes.Where(t => t.Data == dataFiltro),
+                _ => transacoes
             };
         }
 
-        return await PagedList<Transacao>.ToPagedListAsync(trasacoes, transacaoFiltroData.PageNumber, transacaoFiltroData.PageSize);
+        return await PagedList<Transacao>.ToPagedListAsync(transacoes, transacaoFiltroData.PageNumber, transacaoFiltroData.PageSize);
     }
 }

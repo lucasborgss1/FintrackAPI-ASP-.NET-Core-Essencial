@@ -2,8 +2,13 @@
 
 namespace FintrackAPI.Validations;
 
+/// <summary>
+/// Valida que o valor de uma transação é maior que zero.
+/// Exibe a moeda configurada em <c>configuracao:moeda</c> no appsettings na mensagem de erro.
+/// </summary>
 public class ValorMinimoTransacaoAttribute : ValidationAttribute
 {
+    /// <inheritdoc />
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         var configuration = (IConfiguration?)validationContext.GetService(typeof(IConfiguration));

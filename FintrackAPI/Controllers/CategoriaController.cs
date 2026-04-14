@@ -6,15 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FintrackAPI.Controllers
 {
+    /// <summary>
+    /// Gerenciamento de categorias de transações
+    /// </summary>
     [Route("v1/api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class CategoriaController(IUnitOfWork uof, IMapper mapper) : ControllerBase
     {
         private readonly IUnitOfWork _uof = uof;
         private readonly IMapper _mapper = mapper;
 
-        // GET: v1/api/Categoria
+        /// <summary>
+        /// Retorna todas as categorias com suas transações associadas
+        /// </summary>
+        /// <response code="200">Lista de categorias retornada com sucesso</response>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<CategoriaResponseDTO>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<CategoriaResponseDTO>>> GetCategorias()
         {
             var categorias = await _uof.CategoriaRepository.GetCategoriasComTransacoesAsync();
@@ -22,8 +30,15 @@ namespace FintrackAPI.Controllers
             return Ok(categoriasDTO);
         }
 
-        // GET: v1/api/Categoria/{id}
+        /// <summary>
+        /// Retorna uma categoria pelo ID
+        /// </summary>
+        /// <param name="id">ID da categoria (10 dígitos, mínimo 1000000001)</param>
+        /// <response code="200">Categoria encontrada</response>
+        /// <response code="404">Categoria não encontrada</response>
         [HttpGet("{id:long:min(1000000001):length(10)}")]
+        [ProducesResponseType(typeof(CategoriaResponseDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CategoriaResponseDTO>> GetCategoria(long id)
         {
             var categoria = await _uof.CategoriaRepository.GetCategoriaComTransacoesAsync(id);
@@ -41,8 +56,14 @@ namespace FintrackAPI.Controllers
             return Ok(categoriaDTO);
         }
 
-        // PUT: v1/api/Categoria/{id}
+        /// <summary>
+        /// Atualiza uma categoria existente
+        /// </summary>
+        /// <param name="id">ID da categoria a ser atualizada</param>
+        /// <param name="categoriaDTO">Dados atualizados da categoria</param>
+        /// <response code="204">Categoria atualizada com sucesso</response>
         [HttpPut("{id:long:min(1000000001):length(10)}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> PutCategoria(long id, CategoriaRequestDTO categoriaDTO)
         {
             var categoria = _mapper.Map<Categoria>(categoriaDTO);
@@ -54,8 +75,13 @@ namespace FintrackAPI.Controllers
             return NoContent();
         }
 
-        // POST: v1/api/Categoria
+        /// <summary>
+        /// Cria uma nova categoria
+        /// </summary>
+        /// <param name="categoriaDTO">Dados da nova categoria</param>
+        /// <response code="201">Categoria criada com sucesso</response>
         [HttpPost]
+        [ProducesResponseType(typeof(CategoriaResponseDTO), StatusCodes.Status201Created)]
         public async Task<ActionResult<CategoriaResponseDTO>> PostCategoria(CategoriaRequestDTO categoriaDTO)
         {
             var categoria = _mapper.Map<Categoria>(categoriaDTO);
@@ -66,8 +92,15 @@ namespace FintrackAPI.Controllers
             return CreatedAtAction("GetCategoria", new { id = categoriaCriada.CategoriaId }, categoriaResponse);
         }
 
-        // DELETE: v1/api/Categoria/{id}
+        /// <summary>
+        /// Remove uma categoria pelo ID
+        /// </summary>
+        /// <param name="id">ID da categoria a ser removida</param>
+        /// <response code="204">Categoria removida com sucesso</response>
+        /// <response code="404">Categoria não encontrada</response>
         [HttpDelete("{id:long:min(1000000001):length(10)}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteCategoria(long id)
         {
             var categoria = await _uof.CategoriaRepository.GetAsync(c => c.CategoriaId == id);

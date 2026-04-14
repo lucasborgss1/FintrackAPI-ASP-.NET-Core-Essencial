@@ -2,24 +2,21 @@
 
 namespace FintrackAPI.Logging;
 
-public class CustomLoggerProvider : ILoggerProvider
+/// <summary>
+/// Provider de log customizado que cria instâncias de <see cref="CustomLogger"/> por categoria
+/// </summary>
+public class CustomLoggerProvider(CustomLoggerProviderConfiguration config) : ILoggerProvider
 {
-    readonly CustomLoggerProviderConfiguration loggerConfig;
-    readonly ConcurrentDictionary<string, CustomerLogger> loggers =
-        new ConcurrentDictionary<string, CustomerLogger>();
+    private readonly CustomLoggerProviderConfiguration _loggerConfig = config;
+    private readonly ConcurrentDictionary<string, CustomLogger> _loggers = new();
 
-    public CustomLoggerProvider(CustomLoggerProviderConfiguration config)
-    {
-        loggerConfig = config;
-    }
-
+    /// <inheritdoc />
     public ILogger CreateLogger(string categoryName)
-    {
-        return loggers.GetOrAdd(categoryName, name => new CustomerLogger(name, loggerConfig));
-    }    
+        => _loggers.GetOrAdd(categoryName, name => new CustomLogger(_loggerConfig));
 
+    /// <inheritdoc />
     public void Dispose()
     {
-        loggers.Clear();
+        _loggers.Clear();
     }
 }
