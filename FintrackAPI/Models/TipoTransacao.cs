@@ -15,14 +15,15 @@ public class TipoTransacao
 
     [Key]
     [Column("tpt_id_tipo_transacao")]
-    public int TipoTransacaoId { get; set; }
+    public long TipoTransacaoId { get; set; }
 
-    [Required]
-    [StringLength(50)]
+    [Required(ErrorMessage = "O nome do tipo de transação é obrigatório")]
+    [StringLength(50, ErrorMessage = "O nome não pode exceder 50 caracteres")]
+    [MinLength(5, ErrorMessage = "O nome do tipo de transação deve ter, no mínimo, {1} caracteres")]
     [Column("tpt_nm_nome")]
     public string? Nome { get; set; }
 
-    [StringLength(150)]
+    [StringLength(150, ErrorMessage = "A descrição não pode exceder 150 caracteres")]
     [Column("tpt_ds_descricao")]
     public string? Descricao { get; set; }
 
