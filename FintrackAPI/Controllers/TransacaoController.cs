@@ -31,12 +31,12 @@ namespace FintrackAPI.Controllers
 
             var metadata = new
             {
-                transacoes.TotalCount,
+                transacoes.Count,
                 transacoes.PageSize,
-                transacoes.CurrentPage,
-                transacoes.TotalPages,
-                transacoes.HasNext,
-                transacoes.HasPrevious
+                transacoes.PageCount,
+                transacoes.TotalItemCount,
+                transacoes.HasNextPage,
+                transacoes.HasPreviousPage
             };
 
             Response.Headers.Append("X-Pagination", System.Text.Json.JsonSerializer.Serialize(metadata));
@@ -58,12 +58,12 @@ namespace FintrackAPI.Controllers
 
             var metadata = new
             {
-                transacoes.TotalCount,
+                transacoes.Count,
                 transacoes.PageSize,
-                transacoes.CurrentPage,
-                transacoes.TotalPages,
-                transacoes.HasNext,
-                transacoes.HasPrevious
+                transacoes.PageCount,
+                transacoes.TotalItemCount,
+                transacoes.HasNextPage,
+                transacoes.HasPreviousPage
             };
 
             Response.Headers.Append("X-Pagination", System.Text.Json.JsonSerializer.Serialize(metadata));

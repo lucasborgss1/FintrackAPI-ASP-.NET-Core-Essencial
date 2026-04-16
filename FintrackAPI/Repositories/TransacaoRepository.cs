@@ -3,6 +3,7 @@ using FintrackAPI.Models;
 using FintrackAPI.Pagination;
 using FintrackAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
 
 namespace FintrackAPI.Repositories;
 
@@ -32,7 +33,7 @@ public class TransacaoRepository(AppDbContext context) : Repository<Transacao>(c
     }
 
     /// <inheritdoc />
-    public async Task<PagedList<Transacao>> GetAllAsync(TransacaoParameters transacaoParams)
+    public async Task<IPagedList<Transacao>> GetAllAsync(TransacaoParameters transacaoParams)
     {
         var transacoes = _context.Transacoes
             .AsNoTracking()
@@ -40,11 +41,11 @@ public class TransacaoRepository(AppDbContext context) : Repository<Transacao>(c
             .Include(t => t.TipoTransacao)
             .OrderBy(t => t.Data);
 
-        return await PagedList<Transacao>.ToPagedListAsync(transacoes, transacaoParams.PageNumber, transacaoParams.PageSize);
+        return await transacoes.ToPagedListAsync(transacaoParams.PageNumber, transacaoParams.PageSize);
     }
 
     /// <inheritdoc />
-    public async Task<PagedList<Transacao>> GetTransacoesFiltroDataAsync(TransacaoDataParameters transacaoFiltroData)
+    public async Task<IPagedList<Transacao>> GetTransacoesFiltroDataAsync(TransacaoDataParameters transacaoFiltroData)
     {
         var transacoes = _context.Transacoes
             .AsNoTracking()
@@ -66,6 +67,6 @@ public class TransacaoRepository(AppDbContext context) : Repository<Transacao>(c
             };
         }
 
-        return await PagedList<Transacao>.ToPagedListAsync(transacoes, transacaoFiltroData.PageNumber, transacaoFiltroData.PageSize);
+        return await transacoes.ToPagedListAsync(transacaoFiltroData.PageNumber, transacaoFiltroData.PageSize);
     }
 }
