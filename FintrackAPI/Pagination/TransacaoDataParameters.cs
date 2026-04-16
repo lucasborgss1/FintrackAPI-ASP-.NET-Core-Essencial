@@ -17,5 +17,5 @@ public class TransacaoDataParameters : QueryStringParameters
     /// Critério de comparação da data: AntesDe, DepoisDe ou IgualA
     /// </summary>
     /// <example>DepoisDe</example>
-    public DataCriterio? DataCriterio { get; set; }
+    public string? DataCriterio { get; set; }
 }

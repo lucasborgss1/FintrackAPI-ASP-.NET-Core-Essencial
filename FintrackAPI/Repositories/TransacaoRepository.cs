@@ -60,9 +60,9 @@ public class TransacaoRepository(AppDbContext context) : Repository<Transacao>(c
 
             transacoes = transacaoFiltroData.DataCriterio switch
             {
-                DataCriterio.AntesDe => transacoes.Where(t => t.Data < dataFiltro),
-                DataCriterio.DepoisDe => transacoes.Where(t => t.Data > dataFiltro),
-                DataCriterio.IgualA => transacoes.Where(t => t.Data == dataFiltro),
+                "AntesDe" => transacoes.Where(t => t.Data < dataFiltro),
+                "DepoisDe" => transacoes.Where(t => t.Data > dataFiltro),
+                "IgualA" => transacoes.Where(t => t.Data == dataFiltro),
                 _ => transacoes
             };
         }
