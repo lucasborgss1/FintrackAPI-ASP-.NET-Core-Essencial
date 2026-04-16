@@ -14,7 +14,7 @@ public interface ITransacaoRepository : IRepository<Transacao>
 
     /// <summary>Retorna transações filtradas por data com paginação</summary>
     /// <param name="transacaoFiltroData">Parâmetros de filtro e paginação</param>
-    Task<PagedList<Transacao>> GetTransacoesFiltroData(TransacaoDataParameters transacaoFiltroData);
+    Task<PagedList<Transacao>> GetTransacoesFiltroDataAsync(TransacaoDataParameters transacaoFiltroData);
 
     /// <summary>Retorna uma transação pelo ID com categoria e tipo carregados</summary>
     /// <param name="id">ID da transação</param>

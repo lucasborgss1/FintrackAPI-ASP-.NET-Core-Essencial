@@ -44,7 +44,7 @@ public class TransacaoRepository(AppDbContext context) : Repository<Transacao>(c
     }
 
     /// <inheritdoc />
-    public async Task<PagedList<Transacao>> GetTransacoesFiltroData(TransacaoDataParameters transacaoFiltroData)
+    public async Task<PagedList<Transacao>> GetTransacoesFiltroDataAsync(TransacaoDataParameters transacaoFiltroData)
     {
         var transacoes = _context.Transacoes
             .AsNoTracking()

@@ -54,7 +54,7 @@ namespace FintrackAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<TransacaoResponseDTO>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<TransacaoResponseDTO>>> GetTransacoesFiltroData([FromQuery] TransacaoDataParameters transacaoFiltroData)
         {
-            var transacoes = await _ouf.TransacaoRepository.GetTransacoesFiltroData(transacaoFiltroData);
+            var transacoes = await _ouf.TransacaoRepository.GetTransacoesFiltroDataAsync(transacaoFiltroData);
 
             var metadata = new
             {
